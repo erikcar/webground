@@ -1,0 +1,5 @@
+{
+    "presets": [["@babel/preset-env", {
+      // Specify browsers you’re targeting...
+      "targets": "> 0.25%, not dead"}]]
+  }

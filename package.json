@@ -1,0 +1,26 @@
+{
+  "name": "@webground/repo",
+  "version": "1.0.0",
+  "description": "base js web library",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erikcar/webground.git"
+  },
+  "keywords": [
+    "js",
+    "api",
+    "webground"
+  ],
+  "author": "Erik Cardini",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/erikcar/webground/issues"
+  },
+  "homepage": "https://github.com/erikcar/webground#readme",
+  "workspaces": [
+    "./packages/*"
+  ]
+}
