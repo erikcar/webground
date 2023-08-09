@@ -1,0 +1,13 @@
+<html>
+<head>
+  <title>Test Calculator</title>
+</head>
+<body>
+  <script src='../dist/index.js'></script>
+  <script>
+    webground.session.init();
+    console.log(webground.session);
+    webground.session.onbreakpoint = (info, media, breakPoint) => console.log("ON BREAK POINT", info, media, breakPoint);
+  </script>
+</body>
+</html>

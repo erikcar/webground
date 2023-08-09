@@ -1,3 +1,4 @@
+import { options } from "less";
 
 export default function localChannel() {
   this.send = function (opt) {

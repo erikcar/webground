@@ -1,5 +1,6 @@
+import {axiosChannel} from './channels/AxiosChannel';
 import { sleep } from './utils';
-import axiosChannel from './channels/AxiosChannel';
+//import postgreSql from './interpreters/ISql';
 
 //Usa servizio ajax 
 console.log("****APIX****");
@@ -12,11 +13,11 @@ var call_queue = [];
 var apix = function(channel, ecatch, retry) {
   
   this.channel = channel || new axiosChannel();
-  this.parser = null;//postgreSql;
+  this.parser = null; //postgreSql;
   this.ecatch = ecatch;
   this.dataOp = "api/jdata";
   this.queryOp = "api/jquery";
-  this.apiUrl ="Api/";
+  this.apiUrl ="api/";
   this.method = "post";
 
   if (typeof retry === 'undefined') {
@@ -90,7 +91,7 @@ apix.fn = apix.prototype = {
   syncCall: function() {}, // Serve sol per canExecute di client Action (che non prevedono chiamate remote o async)
 
   option: function() {
-    return { method: this.method, channel: this.channel, parser: this.parser, dataOp: this.dataOp };
+    return { method: this.method, channel: this.channel, parser: this.parser, dataOp: this.dataOp, apiUrl: this.apiUrl, queryOp: this.queryOp };
   },
 
   formatOption: function(opt){
@@ -116,23 +117,41 @@ apix.fn = apix.prototype = {
         //GESTIRE ACTION ON RESULT - FACCIO PRIMA O DOPO resolve? ovvero faccio eventuale chiamata prima che venga gestita?
         checkQueue(response.config);
         response.config.promise = null; //Si può? delete? non viene comunque liberata da axios?
-        resolve({
-          data: response.data,
-          args: response.config.args,
-          opt: response.config,
-        });
+        //Qui potrei fare gestione generale di MangaedError
+        const data = response.data;
+        if(data && data.hasOwnProperty("uidt") && data.uidt === "ERROR"){
+          if(instance.onManagedError)
+            instance.onManagedError(data);
+          reject(data);
+        }
+        else{
+          resolve({
+            response: response,
+            data: response.data,
+            args: response.config.args,
+            opt: response.config,
+          });
+        }  
       })
       .catch(function(error) {
         let retry = opt.retry || instance.retry;
         console.log(error, retry);
-        if (retry && retry.canApply(error)) {
+        const data = error.response?.data;
+        if(error.type === "RESPONSE" && data && data.uidt === "ERROR"){
+          if(instance.onManagedError)
+            instance.onManagedError(data);
+          reject(error);
+        }
+        else if (error.type !== "CALL" && retry && retry.canApply(error)) {
           console.log("TENTATIVO: ", retry.count);
           retry.apply(opt);
           instance.rawCall(opt, resolve, reject);
         } 
         else {
           checkQueue(opt);//error.config);
+          if(instance.onError) instance.onError(error);
           reject(error);
+          
           //Log to server error.message?
         }
       });

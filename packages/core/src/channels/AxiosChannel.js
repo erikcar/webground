@@ -9,7 +9,7 @@ axios.defaults.headers.post["Content-Type"] =
  * @returns
  */
 
-export default function axiosChannel(baseUrl) {
+export function axiosChannel(baseUrl) {
   this.baseUrl = baseUrl;
   this.send = function (opt) {
     console.log("AXIOS CHANNEL SEND: ", opt.url);
@@ -33,11 +33,19 @@ export default function axiosChannel(baseUrl) {
           } else if (error.request) {
             error.type = "REQUEST";
           } else {
-            error.type = "GENERIC";
+            error.type = "CALL";
           }
 
           reject(error);
         });
     });
   };
+
+  this.addHeader = function(name, value, method='common'){
+    axios.defaults.headers[method][name] = value;
+  }
+
+  this.setBaseurl = function(url){
+    axios.defaults.baseURL = url;
+  }
 }

@@ -8,7 +8,8 @@ module.exports = {
     path: path.resolve(__dirname, './dist'),
     filename: 'index.js',
     library: 'webground',
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
+    globalObject: 'this',
   },
   optimization: {
     minimize: true,
@@ -19,7 +20,7 @@ module.exports = {
         //sourceMap: true, // Must be set to true if using source-maps in production
         terserOptions: {
           compress: {
-            drop_console: true,
+            drop_console: false,
           },
           format: {
             comments: false,
@@ -31,7 +32,7 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.jsx?$/,
+        test: /\.js$/, //test: /\.jsx?$/,
         exclude: /node_modules/,
         loader: "babel-loader",
       },
